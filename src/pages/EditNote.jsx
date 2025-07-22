@@ -8,84 +8,79 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import Editor from "react-simple-wysiwyg";
 
-
-
 function EditNote() {
-
-      const [title, setTitle] = useState("");
+  const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [content, setContent] = useState("Welcome to <b>Forward College</b>");
-    return(
-
-
-        <>
-        <Container
-      maxWidth="md"
-      sx={{
-        py: "60px",
-      }}
-    >
-      <Typography variant="h3">Edit New Note</Typography>
-      <Paper
-        elevation={3}
+  return (
+    <>
+      <Container
+        maxWidth="md"
         sx={{
-          p: "20px",
-          mt: "20px",
+          py: "60px",
         }}
       >
-        <TextField
-          fullWidth
-          id="note_title"
-          label="Title"
-          variant="outlined"
-          value={title}
-          onChange={(event) => setTitle(event.target.value)}
-        />
-        <FormControl fullWidth sx={{ mt: "20px" }}>
-          <InputLabel id="note_category_label">Category</InputLabel>
-          <Select
-            labelId="note_category_label"
-            id="note_category"
-            label="Category"
-            value={category}
-            onChange={(event) => setCategory(event.target.value)}
-          >
-            <MenuItem value={"Personal"}>Personal</MenuItem>
-            <MenuItem value={"Work"}>Work</MenuItem>
-            <MenuItem value={"Idea"}>Idea</MenuItem>
-          </Select>
-        </FormControl>
-        <Box sx={{ mt: "20px" }}>
-          <Typography variant="body1" sx={{ mb: "10px" }}>
-            Content
-          </Typography>
-          <Editor
-            containerProps={{ style: { height: "400px" } }}
-            value={content}
-            onChange={(event) => {
-              setContent(event.target.value);
-            }}
-          />
-        </Box>
-        <Box
+        <Typography variant="h3">Edit New Note</Typography>
+        <Paper
+          elevation={3}
           sx={{
-            display: "flex",
-            justifyContent: "flex-end",
-            gap: "10px",
+            p: "20px",
             mt: "20px",
           }}
         >
-          <Button color="primary" variant="contained">
-            Save Note
-          </Button>
-          <Button component={RouterLink} to="/" variant="outlined">
-            Cancel
-          </Button>
-        </Box>
-      </Paper>
-    </Container>
-        </>
-    )
+          <TextField
+            fullWidth
+            id="note_title"
+            label="Title"
+            variant="outlined"
+            value={title}
+            onChange={(event) => setTitle(event.target.value)}
+          />
+          <FormControl fullWidth sx={{ mt: "20px" }}>
+            <InputLabel id="note_category_label">Category</InputLabel>
+            <Select
+              labelId="note_category_label"
+              id="note_category"
+              label="Category"
+              value={category}
+              onChange={(event) => setCategory(event.target.value)}
+            >
+              <MenuItem value={"Personal"}>Personal</MenuItem>
+              <MenuItem value={"Work"}>Work</MenuItem>
+              <MenuItem value={"Idea"}>Idea</MenuItem>
+            </Select>
+          </FormControl>
+          <Box sx={{ mt: "20px" }}>
+            <Typography variant="body1" sx={{ mb: "10px" }}>
+              Content
+            </Typography>
+            <Editor
+              containerProps={{ style: { height: "400px" } }}
+              value={content}
+              onChange={(event) => {
+                setContent(event.target.value);
+              }}
+            />
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              gap: "10px",
+              mt: "20px",
+            }}
+          >
+            <Button color="primary" variant="contained">
+              Save Note
+            </Button>
+            <Button component={RouterLink} to="/" variant="outlined">
+              Cancel
+            </Button>
+          </Box>
+        </Paper>
+      </Container>
+    </>
+  );
 }
 
 export default EditNote;
