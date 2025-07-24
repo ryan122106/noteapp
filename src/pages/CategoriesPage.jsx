@@ -84,7 +84,8 @@ function CategoriesPage() {
           return cat;
         })
       );
-      toast("Category has been updated")
+      // show notification of success message
+      toast("Category has been updated");
       // 5c. update the local storage with the updated categories
       localStorage.setItem("categories", JSON.stringify(updatedCategories));
     }
@@ -102,8 +103,8 @@ function CategoriesPage() {
       );
 
       setCategories(updatedCategories);
-
-      toast("Category has been deleted")
+      // show notification of success message
+      toast("Category has been deleted");
       // 6b. update the local storage with the updated categories
       localStorage.setItem("categories", JSON.stringify(updatedCategories));
     }

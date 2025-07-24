@@ -1,162 +1,179 @@
 import { useState } from "react";
-import { Box, Button, Typography } from "@mui/material";
-import Container from "@mui/material/Container";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
-import Select from "@mui/material/Select";
+import { toast } from "sonner";
+import { Link as RouterLink } from "react-router";
+import { Container, Box, Typography, Grid } from "@mui/material";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
-import Grid from "@mui/material/Grid";
-import DeleteIcon from "@mui/icons-material/Delete";
-import AddIcon from "@mui/icons-material/Add";
-import Fab from "@mui/material/Fab";
-import { Link as RouterLink, useNavigate } from "react-router";
+import Select from "@mui/material/Select";
+import Card from "@mui/material/Card";
+import CardActions from "@mui/material/CardActions";
+import CardContent from "@mui/material/CardContent";
+import Button from "@mui/material/Button";
+import Chip from "@mui/material/Chip";
+import { Edit, Delete } from "@mui/icons-material";
 
 function HomePage() {
-  const [category, setCategory] = useState("");
-  const [updated, setUpdated] = useState("");
+  // 1. load all the notes from the local storage
+  const notesLocalStorage = localStorage.getItem("notes");
+  // 2. set the local storage data into notes state
+  const [notes, setNotes] = useState(
+    notesLocalStorage ? JSON.parse(notesLocalStorage) : []
+  );
+  // 13. load all the categories from the local storage
+  const categoriesInLocalStorage = localStorage.getItem("categories");
+
+  // 14. set the categories data from local storage to the categories state
+  const [categories, setCategories] = useState(
+    categoriesInLocalStorage ? JSON.parse(categoriesInLocalStorage) : []
+  );
+
+  // 16. create a selectedCategory state
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [sortBy, setSortBy] = useState("updated");
+
+  const handleNoteDelete = (note) => {
+    // 8. use a confirmation alert to confirm delete
+    const confirmDelete = confirm(
+      "Are you sure you want to delete this specific note from this device?"
+    );
+    if (confirmDelete) {
+      // 9. use filter and remove the note from it
+      const updatedNotes = notes.filter((item) => item.id !== note.id);
+      // 10. update the notes state with updatedNotes
+      setNotes(updatedNotes);
+      // 11. update the local storage with the updatedNotes
+      localStorage.setItem("notes", JSON.stringify(updatedNotes));
+      // 12. show success notification
+      toast("Note has been deleted");
+    }
+  };
+
+  const getCategoryLabel = (note) => {
+    // find the selected category from the local storage data based the category id in the note
+    const selectedCategory = categories.find((c) => c.id === note.category);
+    if (selectedCategory) {
+      return selectedCategory.label;
+    } else {
+      return "No category";
+    }
+  };
 
   return (
-    <Container sx={{ py: "60px" }}>
-      <Box sx={{ display: "flex" }}>
-        <Typography variant="h3">All Notes (3)</Typography>
-        <Box sx={{ ml: "400px" }}>
-          <FormControl sx={{ width: "180px", mr: "10px" }}>
-            <InputLabel id="note_category_label">Category</InputLabel>
-            <Select
-              labelId="note_category_label"
-              id="note_category"
-              label="Category"
-              value={category}
-              onChange={(event) => setCategory(event.target.value)}
-            >
-              <MenuItem value={"Personal"}>Personal</MenuItem>
-              <MenuItem value={"Work"}>Work</MenuItem>
-              <MenuItem value={"Idea"}>Idea</MenuItem>
-            </Select>
-          </FormControl>
-          <FormControl sx={{ width: "180px" }}>
-            <InputLabel id="note_category_label">Sort BY</InputLabel>
-            <Select
-              labelId="note_category_label"
-              id="note_category"
-              label="Category"
-              value={updated}
-              onChange={(event) => setUpdated(event.target.value)}
-            >
-              <MenuItem value={"Last Updated"}>last Updated</MenuItem>
-              <MenuItem value={"Title"}>Title</MenuItem>
-            </Select>
-          </FormControl>
+    <>
+      <Container sx={{ py: 10 }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          {/* 7. render the length of the notes */}
+          <Typography variant="h4">All Notes ({notes.length})</Typography>
+          <Box sx={{ display: "flex", gap: "10px", alignItems: "center" }}>
+            <Box sx={{ minWidth: 120 }}>
+              <FormControl fullWidth>
+                <InputLabel id="demo-simple-select-label">Category</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  /* 17. assign the selectedCategory state and onChange */
+                  value={selectedCategory}
+                  label="Category"
+                  onChange={(event) => setSelectedCategory(event.target.value)}
+                >
+                  <MenuItem value={"all"}>All Categories</MenuItem>
+                  {
+                    /* 15. use .map to render all the categories*/
+                    categories.map((category) => (
+                      <MenuItem key={category.id} value={category.id}>
+                        {category.label}
+                      </MenuItem>
+                    ))
+                  }
+                </Select>
+              </FormControl>
+            </Box>
+            <Box sx={{ minWidth: 120 }}>
+              <FormControl fullWidth>
+                <InputLabel id="demo-simple-select-label">Sort By</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={sortBy}
+                  label="Sort By"
+                  onChange={(event) => setSortBy(event.target.value)}
+                  $
+                >
+                  <MenuItem value={"updated"}>Last Updated</MenuItem>
+                  <MenuItem value={"title"}>Title</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
+          </Box>
         </Box>
-      </Box>
-      <Box>
-        <Grid container spacing={4}>
-          <Grid size={4}>
-            <Card sx={{ width: "400px", mt: "30px" }}>
-              <CardContent>
-                <Typography variant="h5">Which theme should we pick</Typography>
-                <Typography variant="h5" component="div"></Typography>
-                <Button
-                  sx={{
-                    bgcolor: "silver",
-                    color: "black",
-                    borderRadius: "40px",
-                  }}
-                >
-                  Ideas
-                </Button>
-                <Typography sx={{ pt: "20px" }}>Time</Typography>
-              </CardContent>
-              <Button component={RouterLink} to="/edit">
-                <DriveFileRenameOutlineIcon
-                  sx={{ display: { xs: "none", md: "flex" }, mr: 1 }}
-                />
-                Edit
-              </Button>
-              <Button color="error" sx={{ ml: "10px" }}>
-                <DeleteIcon
-                  sx={{ display: { xs: "none", md: "flex" }, mr: 1 }}
-                />
-                Delete
-              </Button>
-            </Card>
-          </Grid>
-          <Grid size={4}>
-            <Card sx={{ width: "400px", mt: "30px" }}>
-              <CardContent>
-                <Typography variant="h5">Which theme should we pick</Typography>
-                <Typography variant="h5" component="div"></Typography>
-                <Button
-                  sx={{
-                    bgcolor: "silver",
-                    color: "black",
-                    borderRadius: "40px",
-                  }}
-                >
-                  Ideas
-                </Button>
-                <Typography sx={{ pt: "20px" }}>Time</Typography>
-              </CardContent>
-              <Button component={RouterLink} to="/edit">
-                <DriveFileRenameOutlineIcon
-                  sx={{ display: { xs: "none", md: "flex" }, mr: 1 }}
-                />
-                Edit
-              </Button>
-              <Button color="error" sx={{ ml: "10px" }}>
-                <DeleteIcon
-                  sx={{ display: { xs: "none", md: "flex" }, mr: 1 }}
-                />
-                Delete
-              </Button>
-            </Card>
-          </Grid>
-          <Grid size={4}>
-            <Card sx={{ width: "400px", mt: "30px" }}>
-              <CardContent>
-                <Typography variant="h5">Which theme should we pick</Typography>
-                <Typography variant="h5" component="div"></Typography>
-                <Button
-                  sx={{
-                    bgcolor: "silver",
-                    color: "black",
-                    borderRadius: "40px",
-                  }}
-                >
-                  Ideas
-                </Button>
-                <Typography sx={{ pt: "20px" }}>Time</Typography>
-              </CardContent>
-              <Button component={RouterLink} to="/edit">
-                <DriveFileRenameOutlineIcon
-                  sx={{ display: { xs: "none", md: "flex" }, mr: 1 }}
-                />
-                Edit
-              </Button>
-              <Button color="error" sx={{ ml: "10px" }}>
-                <DeleteIcon
-                  sx={{ display: { xs: "none", md: "flex" }, mr: 1 }}
-                />
-                Delete
-              </Button>
-            </Card>
-          </Grid>
+        <Grid container spacing={2} sx={{ mt: 5 }}>
+          {/* 3. use .map() to render the notes  */}
+          {notes
+            .filter((n) => {
+              // if all is selected, return true
+              if (selectedCategory === "all") {
+                return true;
+              } else if (n.category === selectedCategory) {
+                return true;
+              }
+              return false;
+            })
+            .sort((a, b) => {
+              if (sortBy === "updated") {
+                return b.updatedAt - a.updatedAt;
+              } else {
+                return a.title.localeCompare(b.title);
+              }
+            })
+            .map((note) => (
+              <Grid size={{ xs: 12, sm: 12, md: 6, lg: 4 }}>
+                <Card sx={{ width: "100%" }}>
+                  <CardContent>
+                    {/* 4. render the note title  */}
+                    <Typography gutterBottom variant="h5" component="div">
+                      {note.title}
+                    </Typography>
+                    <Chip label={getCategoryLabel(note)} />
+                    <Typography
+                      variant="body2"
+                      sx={{ color: "text.secondary" }}
+                    >
+                      {new Date(note.updatedAt).toLocaleString()}
+                    </Typography>
+                  </CardContent>
+                  <CardActions>
+                    {/* 5. go to edit page  */}
+                    <Button
+                      size="small"
+                      component={RouterLink}
+                      to={`/n/${note.id}`}
+                    >
+                      <Edit fontSize="16px" sx={{ mr: 1 }} />
+                      Edit
+                    </Button>
+                    {/* 6. attach a onClick event handling for delete  */}
+                    <Button
+                      size="small"
+                      color="error"
+                      onClick={() => handleNoteDelete(note)}
+                    >
+                      <Delete fontSize="16px" sx={{ mr: 1 }} />
+                      Delete
+                    </Button>
+                  </CardActions>
+                </Card>
+              </Grid>
+            ))}
         </Grid>
-      </Box>
-
-      <Fab
-        color="primary"
-        aria-label="add"
-        sx={{ mt: "400px", ml: "1000px" }}
-        component={RouterLink}
-        to="/add"
-      >
-        <AddIcon />
-      </Fab>
-    </Container>
+      </Container>
+    </>
   );
 }
 
